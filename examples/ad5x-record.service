@@ -1,0 +1,14 @@
+[Unit]
+Description=Record Flashforge AD5X print
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cjg
+EnvironmentFile=/REPLACE_WITH_RECORDER_ENV_DIR/ad5x-record.env
+ExecStart=/REPLACE_WITH_RECORDER_SCRIPT_DIR/ad5x-record
+KillSignal=SIGINT
+TimeoutStopSec=30
+Restart=no
+SuccessExitStatus=255

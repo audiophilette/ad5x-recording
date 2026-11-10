@@ -1,0 +1,39 @@
+shell_command:
+  ad5x_record_start: >-
+    ssh -i /REPLACE_WITH_HA_SSH_DIR/ad5x_recorder
+    -o BatchMode=yes
+    -o ConnectTimeout=10
+    -o StrictHostKeyChecking=yes
+    -o UserKnownHostsFile=/REPLACE_WITH_HA_SSH_DIR/known_hosts
+    ha-ad5x@recorder_host.example.com
+    'sudo -n /usr/bin/systemctl start ad5x-record.service'
+
+  ad5x_record_stop: >-
+    ssh -i /REPLACE_WITH_HA_SSH_DIR/ad5x_recorder
+    -o BatchMode=yes
+    -o ConnectTimeout=10
+    -o StrictHostKeyChecking=yes
+    -o UserKnownHostsFile=/REPLACE_WITH_HA_SSH_DIR/known_hosts
+    ha-ad5x@recorder_host.example.com
+    'sudo -n /usr/bin/systemctl stop ad5x-record.service'
+
+automation:
+  - id: ad5x_record_start
+    alias: "AD5X - Start recording"
+    triggers:
+      - trigger: state
+        entity_id: sensor.dining_room_flashforge_printer_machine_status
+        to: "printing"
+    actions:
+      - action: shell_command.ad5x_record_start
+    mode: single
+
+  - id: ad5x_record_stop
+    alias: "AD5X - Stop recording"
+    triggers:
+      - trigger: state
+        entity_id: sensor.dining_room_flashforge_printer_machine_status
+        to: "completed"
+    actions:
+      - action: shell_command.ad5x_record_stop
+    mode: single

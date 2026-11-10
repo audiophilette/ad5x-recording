@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${HA_TOKEN:?HA_TOKEN is not set}"
+
+OUTDIR=/REPLACE_WITH_RECORDINGS_DIR
+mkdir -p "$OUTDIR"
+
+exec /usr/bin/ffmpeg \
+  -nostdin \
+  -headers "Authorization: Bearer ${HA_TOKEN}" \
+  -use_wallclock_as_timestamps 1 \
+  -fflags +genpts \
+  -i 'http://HOME_ASSISTANT:8123/api/camera_proxy_stream/camera.dining_room_flashforge_printer_camera' \
+  -map 0:v:0 \
+  -c:v libx264 \
+  -preset ultrafast \
+  -crf 23 \
+  -pix_fmt yuv420p \
+  -fps_mode vfr \
+  -f matroska \
+  "$OUTDIR/$(date +%Y-%m-%d_%H-%M-%S).mkv"
